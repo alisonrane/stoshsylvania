@@ -13,9 +13,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchTides = async (date) => {
         const formattedDate = formatDate(date);
         try {
-            const response = await fetch(`/.netlify/functions/getTides?date=${formattedDate}`);
-            if (!response.ok) throw new Error('Network response was not ok');
-            return await response.json();
+            const beginDate = new Date(date);
+        const endDate = new Date(beginDate);
+        beginDate.setDate(beginDate.getDate() - 1);
+        endDate.setDate(endDate.getDate() + 1);
+
+        const formattedBeginDate = formatDate(beginDate);
+        const formattedEndDate = formatDate(endDate);
+
+
+
+    const response = await fetch('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date='+formattedBeginDate+'&end_date='+formattedEndDate+'&station=8535163&product=predictions&datum=MLLW&time_zone=lst_ldt&interval=hilo&units=english&format=json');
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    } else{
+        const json = await response.json();
+
+        return json;
+    }
+
         } catch (error) {
             console.error(`Error fetching tides for ${formattedDate}:`, error);
             return { error: 'Failed to fetch tide data' };
@@ -57,24 +73,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
 
     try {
-        const [todayData, yesterdayData, tomorrowData] = await Promise.all([
-            fetchTides(today),
-            fetchTides(yesterday),
-            fetchTides(tomorrow)
+        const todayData = await Promise.all([
+            fetchTides(today)
         ]);
 
-        const allTides = [
-            ...(yesterdayData.predictions || []),
-            ...(todayData.predictions || []),
-            ...(tomorrowData.predictions || [])
-        ];
+
+        const predictions = todayData[0].predictions;
+        const allTides = predictions;
 
         allTides.sort((a, b) => new Date(a.t) - new Date(b.t));
 
@@ -93,4 +100,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         previousTidesDiv.innerHTML = `<p>Failed to process tide data.</p>`;
         futureTidesDiv.innerHTML = `<p>Failed to process tide data.</p>`;
     }
+
+
+    function getTides(theUrl, callback){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true);
+    xmlHttp.send(null);
+}
+
+
 });
