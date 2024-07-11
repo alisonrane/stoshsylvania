@@ -1,0 +1,19 @@
+{
+  "name": "tide-predictions",
+  "version": "1.0.0",
+  "description": "A simple website to display tide predictions using NOAA's API",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step defined'",
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^12.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

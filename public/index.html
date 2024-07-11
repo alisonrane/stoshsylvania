@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tide Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #next-tide, #previous-tides, #future-tides {
+            margin: 20px;
+        }
+        .tide {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tide Predictions for Station 8535163</h1>
+    <div id="next-tide">
+        <h2>Next Upcoming Tide</h2>
+        <div class="tide" id="next-tide-info"></div>
+    </div>
+    <div id="previous-tides">
+        <h2>Last 4 Tides</h2>
+    </div>
+    <div id="future-tides">
+        <h2>Next 4 Tides</h2>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
