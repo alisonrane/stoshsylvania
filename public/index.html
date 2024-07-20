@@ -16,20 +16,32 @@
             padding: 10px;
             margin-bottom: 10px;
         }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+          }
+        .container :first-child {
+            grid-column: 1 / -1;  
+        }
     </style>
 </head>
 <body>
+    
     <h1>Tide Predictions for Station 8535163</h1>
-    <div id="next-tide">
-        <h2>Next Upcoming Tide</h2>
-        <div class="tide" id="next-tide-info"></div>
-    </div>
-    <div id="previous-tides">
-        <h2>Last 4 Tides</h2>
-    </div>
-    <div id="future-tides">
-        <h2>Next 4 Tides</h2>
-    </div>
+    <div class="container">
+        <div id="next-tide">
+            <h2>Next Upcoming Tide</h2>
+            <div class="tide" id="next-tide-info"></div>
+        </div>
+        <div>
+            <h2>Last 4 Tides</h2>
+            <div id="previous-tides"></div>
+        </div>
+        <div>
+            <h2>Next 4 Tides</h2>
+            <div id="future-tides"></div>
+        </div>
+</div>
     <script src="src/app.js"></script>
 </body>
 </html>
