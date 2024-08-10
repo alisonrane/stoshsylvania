@@ -38,13 +38,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const convertTo12HourTime = (datetime) => {
+    const convertDateForDisplay = (datetime) => {
         const [date, time24] = datetime.split(' ');
         const [hours, minutes] = time24.split(':').map(Number);
         const period = hours >= 12 ? 'PM' : 'AM';
         const hours12 = hours % 12 || 12;
         const minutesFormatted = String(minutes).padStart(2, '0');
-        return `${date} ${hours12}:${minutesFormatted} ${period}`;
+
+        const dateObject = new Date(datetime);
+        const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const dayOfTheWeek = weekday[dateObject.getDay()];
+
+        const day = dateObject.getUTCDate();
+        const month = dateObject.getMonth()+1;
+
+        return `${dayOfTheWeek} ${month}/${day} ${hours12}:${minutesFormatted} ${period}`;
     };
 
     const formatTides = (data) => {
@@ -61,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isHighTide = prediction.type === 'H';
             const icon = isLowTide ? '⬇️' : (isHighTide ? '⬆️' : '');
             const datetime = prediction.t;
-            const formattedDatetime = convertTo12HourTime(datetime);
+            const formattedDatetime = convertDateForDisplay(datetime);
 
             return `
                 <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')}">
