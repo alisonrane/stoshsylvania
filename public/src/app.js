@@ -67,14 +67,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data.predictions.map(prediction => {
             const isLowTide = prediction.type === 'L';
             const isHighTide = prediction.type === 'H';
-            const icon = isLowTide ? '⬇️' : (isHighTide ? '⬆️' : '');
+            const icon = isLowTide ? '👇' : (isHighTide ? '☝️' : '');
             const datetime = prediction.t;
             const formattedDatetime = convertDateForDisplay(datetime);
+            console.log("isLowTide:", isLowTide, "isHighTide:", isHighTide);
 
             return `
                 <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')}">
                     <h3>${formattedDatetime}</h3>
-                    <p>Height: ${prediction.v} feet <span class="tide-icon">${icon}</span></p>
+                    <p>${prediction.v} feet <span class="tide-icon">${icon}</span></p>
                 </div>
             `;
         }).join('');
