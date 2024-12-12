@@ -11,12 +11,13 @@ body {
 
 h1 {
     margin-top: 20px;
+    text-align: center;
 }
 
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* grid-template-rows: auto 1fr; */
+    /* grid-template-rows: auto 1fr;  */
     gap: 20px;
     width: 90%;
     max-width: 1200px;
@@ -41,12 +42,6 @@ h1 {
     margin: 0 0 10px 0; 
 }
 
-.tides-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 #previous-tides {
     grid-column: 1;
     grid-row: 2;
@@ -67,20 +62,20 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     gap: 10px;
+    margin: 20px;
 
 }
 
-@media (min-width: 768px) {
-    .tide {
+@media (min-width: 7500px) {
+    .tides-group {
         flex-direction: row;  /* Switch to row layout for larger screens */
         justify-content: space-between;  /* Space out items in row */
         align-items: center;  /* Center the items vertically in the row */
     }
 }
 
-.tide h3 {
+.tide h2 {
     margin: 0 0 10px 0;
-    font-size: 18px;
 }
 
 .tide p {
@@ -90,15 +85,15 @@ h1 {
 }
 
 .low-tide {
-    background: linear-gradient(to right, #a3cde6, #f1e2b3);
+    background: linear-gradient(to right, #a3cde6 5%, #f1e2b3 25%);
     color: #2e4a62;
     padding: 10px;
     border-radius: 5px;
 }
 
 .high-tide {
-    background: linear-gradient(to left, #c1e1c1, #87b87f);
-    color: #2c4d2f;
+    background: linear-gradient(to right, #a3cde6 40%, #f1e2b3 80%);
+    color: #2e4a62;
     padding: 10px;
     border-radius: 5px;
 }
