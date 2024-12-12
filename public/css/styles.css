@@ -92,7 +92,7 @@ h1 {
 }
 
 .high-tide {
-    background: linear-gradient(to right, #a3cde6 40%, #f1e2b3 80%);
+    background: linear-gradient(to right, #a3cde6 80%, #f1e2b3 100%);
     color: #2e4a62;
     padding: 10px;
     border-radius: 5px;
