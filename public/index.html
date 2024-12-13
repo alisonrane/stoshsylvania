@@ -5,39 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tide Predictions</title>
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #next-tide, #previous-tides, #future-tides {
-            margin: 20px;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-          }
-        .container :first-child {
-            grid-column: 1 / -1;  
-        }
-    </style>
 </head>
-<body>
-    
+<body>    
     <h1>Tide Predictions for Stoshsylvania</h1>
     <div class="container">
         <div id="next-tide">
             <h2>Next Tide</h2>
-            <div class="tides" id="next-tide-info"></div>
+            <div id="next-tide-info"></div>
         </div>
-        <div class="tide">
-            <h2>Last 4 Tides</h2>
-            <div id="previous-tides"></div>
-        </div>
-        <div class="tide">
+        <div id="future-tides">
             <h2>Next 4 Tides</h2>
-            <div id="future-tides"></div>
+            <div></div>
         </div>
-</div>
+        <div id="previous-tides">
+            <h2>Last 4 Tides</h2>
+            <div class="tides"></div>
+        </div>
+    </div>
     <script src="src/app.js"></script>
 </body>
 </html>

@@ -3,8 +3,6 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
     align-items: center;
     background-color: #f0f0f0;
 }
@@ -16,8 +14,7 @@ h1 {
 
 .container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* grid-template-rows: auto 1fr;  */
+    grid-template-columns: 1fr;
     gap: 20px;
     width: 90%;
     max-width: 1200px;
@@ -25,12 +22,7 @@ h1 {
 }
 
 #next-tide {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    grid-column: 1 / 3;
-    grid-row: 1;
+    order: 1;
     text-align: center;
     background-color: #fff;
     padding: 20px;
@@ -38,40 +30,38 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#next-tide h2 {
+#next-tide h2,
+#future-tides h2,
+#previous-tides h2 {
     margin: 0 0 10px 0; 
 }
 
-#previous-tides {
-    grid-column: 1;
-    grid-row: 2;
+#future-tides {
+    order: 2;
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#future-tides {
-    grid-column: 2;
-    grid-row: 2;
+#previous-tides {
+    order: 3;    
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .tide {
-    display: flex;
-    flex-direction: column;
     text-align: center;
-    align-items: center;
     background-color: #fff;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     gap: 10px;
     margin: 20px;
-
-}
-
-@media (min-width: 7500px) {
-    .tides-group {
-        flex-direction: row;  /* Switch to row layout for larger screens */
-        justify-content: space-between;  /* Space out items in row */
-        align-items: center;  /* Center the items vertically in the row */
-    }
 }
 
 .tide h2 {
@@ -80,7 +70,6 @@ h1 {
 
 .tide p {
     margin: 0; 
-    display: flex;
     align-items: center;
 }
 
@@ -100,7 +89,7 @@ h1 {
 
 .tide-icon {
     margin-left: auto; /* Push icon to the far right */
-    font-size: 50px; /* Slightly smaller size for balance */
+    font-size: 30px; /* Slightly smaller size for balance */
     color: #666; /* Neutral color */
     transition: color 0.2s;
 }
