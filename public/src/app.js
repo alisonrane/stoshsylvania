@@ -2,6 +2,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextTideDiv = document.getElementById('next-tide-info');
     const previousTidesDiv = document.getElementById('previous-tides-list');
     const futureTidesDiv = document.getElementById('future-tides-list');
+    const moonPhaseDiv = document.getElementById('moon-phase-info');
+
+    const getMoonPhase = (date) => {
+        const synodicMonth = 29.53058867;
+        const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+        const daysSinceNewMoon = (date.getTime() - knownNewMoon) / 86400000;
+        const phaseFraction = (((daysSinceNewMoon % synodicMonth) + synodicMonth) % synodicMonth) / synodicMonth;
+
+        const phases = [
+            { max: 0.03, name: 'New Moon', emoji: '🌑' },
+            { max: 0.22, name: 'Waxing Crescent', emoji: '🌒' },
+            { max: 0.28, name: 'First Quarter', emoji: '🌓' },
+            { max: 0.47, name: 'Waxing Gibbous', emoji: '🌔' },
+            { max: 0.53, name: 'Full Moon', emoji: '🌕' },
+            { max: 0.72, name: 'Waning Gibbous', emoji: '🌖' },
+            { max: 0.78, name: 'Last Quarter', emoji: '🌗' },
+            { max: 0.97, name: 'Waning Crescent', emoji: '🌘' },
+            { max: 1, name: 'New Moon', emoji: '🌑' },
+        ];
+        const phase = phases.find(p => phaseFraction <= p.max);
+        const illumination = Math.round((1 - Math.cos(phaseFraction * 2 * Math.PI)) / 2 * 100);
+
+        return { name: phase.name, emoji: phase.emoji, illumination };
+    };
+
+    const moonPhase = getMoonPhase(new Date());
+    moonPhaseDiv.innerHTML = `
+        <div class="tide moon-card">
+            <div class="moon-emoji">${moonPhase.emoji}</div>
+            <div class="moon-name">${moonPhase.name}</div>
+            <div class="moon-illumination">${moonPhase.illumination}% illuminated</div>
+        </div>
+    `;
 
     const skeletonCard = `
         <div class="tide skeleton">
@@ -54,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         a.getMonth() === b.getMonth() &&
         a.getDate() === b.getDate();
 
-    const convertDateForDisplay = (datetime) => {
+    const getDisplayParts = (datetime) => {
         const [date, time24] = datetime.split(' ');
         const [hours, minutes] = time24.split(':').map(Number);
         const period = hours >= 12 ? 'PM' : 'AM';
@@ -84,7 +117,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const day = dateObject.getDate();
         const month = dateObject.getMonth()+1;
 
-        return `<span class="day-label">${dayLabel}</span> <span class="date-label">${month}/${day}</span> <span class="time-label">${hours12}:${minutesFormatted} ${period}</span>`;
+        const isNight = hours < 6 || hours >= 20;
+
+        return {
+            dateLabel: `${dayLabel} ${month}/${day}`,
+            timeLabel: `${hours12}:${minutesFormatted} ${period}`,
+            isNight
+        };
     };
 
     const formatCountdown = (ms) => {
@@ -116,14 +155,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isHighTide = prediction.type === 'H';
             const icon = isLowTide ? '👇' : (isHighTide ? '☝️' : '');
             const label = isLowTide ? 'Low' : (isHighTide ? 'High' : '');
-            const datetime = prediction.t;
-            const formattedDatetime = convertDateForDisplay(datetime);
+            const { dateLabel, timeLabel, isNight } = getDisplayParts(prediction.t);
+            const sunMoonIcon = isNight ? '🌙' : '☀️';
 
             return `
-                <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')}">
-                    <div class="tide-badge">${icon} ${label}</div>
-                    <h3>${formattedDatetime}</h3>
-                    <p>${Number(prediction.v).toFixed(1)} ft</p>
+                <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')} ${isNight ? 'is-night' : ''}">
+                    <div class="tide-meta">
+                        <span class="tide-date">${sunMoonIcon} ${dateLabel}</span>
+                        <span class="tide-badge">${icon} ${label}</span>
+                    </div>
+                    <div class="tide-main">
+                        <span class="tide-time">${timeLabel}</span>
+                        <span class="tide-height">${Number(prediction.v).toFixed(1)} ft</span>
+                    </div>
                 </div>
             `;
         }).join('');

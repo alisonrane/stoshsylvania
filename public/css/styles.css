@@ -48,8 +48,9 @@ h1 {
     margin: 0;
 }
 
-#next-tide-info h3 {
-    font-size: 1.4rem;
+#next-tide-info .tide-time,
+#next-tide-info .tide-height {
+    font-size: 1.6rem;
 }
 
 .tides {
@@ -61,33 +62,34 @@ h1 {
 .tide {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    text-align: center;
-    padding: 14px 10px;
+    gap: 8px;
+    padding: 14px 16px;
     border-radius: 8px;
     margin: 0;
 }
 
-.tide h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.4;
+.tide-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.tide h3 .day-label {
-    font-weight: 700;
-}
-
-.tide h3 .date-label {
-    opacity: 0.75;
-    font-size: 0.9em;
-}
-
-.tide p {
-    margin: 0;
-    font-size: 1.3rem;
+.tide-date {
+    font-size: 0.85rem;
     font-weight: 600;
+    opacity: 0.8;
+}
+
+.tide-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.tide-time,
+.tide-height {
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .tide-badge {
@@ -119,6 +121,16 @@ h1 {
 .high-tide .tide-badge {
     background-color: #c98a1f;
     color: #fff;
+}
+
+.low-tide.is-night {
+    background: linear-gradient(to right, #24384a 5%, #5c4b30 25%);
+    color: #eef2f6;
+}
+
+.high-tide.is-night {
+    background: linear-gradient(to right, #24384a 80%, #5c4b30 100%);
+    color: #eef2f6;
 }
 
 @media (min-width: 700px) {
@@ -174,6 +186,8 @@ h1 {
 .error-card {
     background-color: #fbe9e7;
     color: #7a2e1f;
+    align-items: center;
+    text-align: center;
     gap: 10px;
 }
 
@@ -197,4 +211,26 @@ h1 {
 
 .retry-btn:hover {
     background-color: #a8452f;
+}
+
+.moon-card {
+    align-items: center;
+    text-align: center;
+    background-color: #eef2f6;
+    color: #2e4a62;
+}
+
+.moon-emoji {
+    font-size: 2.8rem;
+    line-height: 1;
+}
+
+.moon-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.moon-illumination {
+    font-size: 0.9rem;
+    opacity: 0.75;
 }
