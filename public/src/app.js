@@ -1,8 +1,11 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const nextTideDiv = document.getElementById('next-tide-info');
     const previousTidesDiv = document.getElementById('previous-tides-list');
     const futureTidesDiv = document.getElementById('future-tides-list');
     const moonPhaseDiv = document.getElementById('moon-phase-info');
+    const refreshBtn = document.getElementById('refresh-btn');
+
+    let countdownIntervalId = null;
 
     const getMoonPhase = (date) => {
         const synodicMonth = 29.53058867;
@@ -27,14 +30,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         return { name: phase.name, emoji: phase.emoji, illumination };
     };
 
-    const moonPhase = getMoonPhase(new Date());
-    moonPhaseDiv.innerHTML = `
-        <div class="tide moon-card">
-            <div class="moon-emoji">${moonPhase.emoji}</div>
-            <div class="moon-name">${moonPhase.name}</div>
-            <div class="moon-illumination">${moonPhase.illumination}% illuminated</div>
-        </div>
-    `;
+    const renderMoonPhase = () => {
+        const moonPhase = getMoonPhase(new Date());
+        moonPhaseDiv.innerHTML = `
+            <div class="tide moon-card">
+                <div class="moon-emoji">${moonPhase.emoji}</div>
+                <div class="moon-name">${moonPhase.name}</div>
+                <div class="moon-illumination">${moonPhase.illumination}% illuminated</div>
+            </div>
+        `;
+    };
 
     const skeletonCard = `
         <div class="tide skeleton">
@@ -43,9 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="skeleton-line skeleton-value"></div>
         </div>
     `;
-    nextTideDiv.innerHTML = skeletonCard;
-    futureTidesDiv.innerHTML = skeletonCard.repeat(4);
-    previousTidesDiv.innerHTML = skeletonCard.repeat(4);
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -58,24 +60,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const formattedDate = formatDate(date);
         try {
             const beginDate = new Date(date);
-        const endDate = new Date(beginDate);
-        beginDate.setDate(beginDate.getDate() - 1);
-        endDate.setDate(endDate.getDate() + 1);
+            const endDate = new Date(beginDate);
+            beginDate.setDate(beginDate.getDate() - 1);
+            endDate.setDate(endDate.getDate() + 1);
 
-        const formattedBeginDate = formatDate(beginDate);
-        const formattedEndDate = formatDate(endDate);
+            const formattedBeginDate = formatDate(beginDate);
+            const formattedEndDate = formatDate(endDate);
 
-
-
-    const response = await fetch('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date='+formattedBeginDate+'&end_date='+formattedEndDate+'&station=8535163&product=predictions&datum=MLLW&time_zone=lst_ldt&interval=hilo&units=english&format=json');
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    } else{
-        const json = await response.json();
-
-        return json;
-    }
-
+            const response = await fetch(
+                'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date=' + formattedBeginDate +
+                '&end_date=' + formattedEndDate +
+                '&station=8535163&product=predictions&datum=MLLW&time_zone=lst_ldt&interval=hilo&units=english&format=json',
+                { cache: 'no-store' }
+            );
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            return await response.json();
         } catch (error) {
             console.error(`Error fetching tides for ${formattedDate}:`, error);
             return { error: 'Failed to fetch tide data' };
@@ -179,57 +180,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         }).join('');
     };
 
-    const today = new Date();
+    const loadTides = async () => {
+        nextTideDiv.innerHTML = skeletonCard;
+        futureTidesDiv.innerHTML = skeletonCard.repeat(4);
+        previousTidesDiv.innerHTML = skeletonCard.repeat(4);
 
-    try {
-        const todayData = await Promise.all([
-            fetchTides(today)
-        ]);
+        try {
+            const todayData = await fetchTides(new Date());
+            const allTides = todayData.predictions;
 
+            allTides.sort((a, b) => new Date(a.t) - new Date(b.t));
 
-        const predictions = todayData[0].predictions;
-        const allTides = predictions;
+            const nextTide = allTides.find(tide => new Date(tide.t) > new Date());
+            const nextTideIndex = allTides.indexOf(nextTide);
 
-        allTides.sort((a, b) => new Date(a.t) - new Date(b.t));
+            const priorTides = allTides.slice(Math.max(0, nextTideIndex - 4), nextTideIndex).reverse();
+            const futureTides = allTides.slice(nextTideIndex + 1, nextTideIndex + 5);
 
-        const nextTide = allTides.find(tide => new Date(tide.t) > new Date());
-        const nextTideIndex = allTides.indexOf(nextTide);
+            const heights = allTides.map(tide => Number(tide.v));
+            const heightRange = { minV: Math.min(...heights), maxV: Math.max(...heights) };
 
-        const priorTides = allTides.slice(Math.max(0, nextTideIndex - 4), nextTideIndex).reverse();
-        const futureTides = allTides.slice(nextTideIndex + 1, nextTideIndex + 5);
+            nextTideDiv.innerHTML = formatTides({ predictions: [nextTide] }, heightRange);
+            previousTidesDiv.innerHTML = formatTides({ predictions: priorTides }, heightRange);
+            futureTidesDiv.innerHTML = formatTides({ predictions: futureTides }, heightRange);
 
-        const heights = allTides.map(tide => Number(tide.v));
-        const heightRange = { minV: Math.min(...heights), maxV: Math.max(...heights) };
+            const nextTideTime = new Date(nextTide.t);
+            const headingEl = document.getElementById('next-tide-heading');
+            const updateCountdown = () => {
+                headingEl.textContent = `Next Tide ${formatCountdown(nextTideTime - new Date())}`;
+            };
+            updateCountdown();
 
-        nextTideDiv.innerHTML = formatTides({ predictions: [nextTide] }, heightRange);
-        previousTidesDiv.innerHTML = formatTides({ predictions: priorTides }, heightRange);
-        futureTidesDiv.innerHTML = formatTides({ predictions: futureTides }, heightRange);
+            if (countdownIntervalId) clearInterval(countdownIntervalId);
+            countdownIntervalId = setInterval(updateCountdown, 30000);
+        } catch (error) {
+            console.error('Error processing tide data:', error);
+            const message = errorCard('Failed to load tide data.');
+            nextTideDiv.innerHTML = message;
+            previousTidesDiv.innerHTML = message;
+            futureTidesDiv.innerHTML = message;
+        }
+    };
 
-        const nextTideTime = new Date(nextTide.t);
-        const headingEl = document.getElementById('next-tide-heading');
-        const updateCountdown = () => {
-            headingEl.textContent = `Next Tide ${formatCountdown(nextTideTime - new Date())}`;
-        };
-        updateCountdown();
-        setInterval(updateCountdown, 30000);
-    } catch (error) {
-        console.error('Error processing tide data:', error);
-        const message = errorCard('Failed to load tide data.');
-        nextTideDiv.innerHTML = message;
-        previousTidesDiv.innerHTML = message;
-        futureTidesDiv.innerHTML = message;
-    }
+    const refreshAll = () => {
+        renderMoonPhase();
+        loadTides();
+    };
 
+    refreshBtn.addEventListener('click', refreshAll);
 
-    function getTides(theUrl, callback){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-    }
-    xmlHttp.open("GET", theUrl, true);
-    xmlHttp.send(null);
-}
-
-
+    refreshAll();
 });

@@ -6,3 +6,23 @@
   command = "npm start"
   port = 8888
   targetPort = 3000
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/src/app.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/css/styles.css"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
