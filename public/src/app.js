@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
     `;
 
-    const formatTides = (data) => {
+    const formatTides = (data, range) => {
         if (data.error) {
             return errorCard(data.error);
         }
@@ -153,20 +153,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data.predictions.map(prediction => {
             const isLowTide = prediction.type === 'L';
             const isHighTide = prediction.type === 'H';
-            const icon = isLowTide ? '👇' : (isHighTide ? '☝️' : '');
             const label = isLowTide ? 'Low' : (isHighTide ? 'High' : '');
             const { dateLabel, timeLabel, isNight } = getDisplayParts(prediction.t);
-            const sunMoonIcon = isNight ? '🌙' : '☀️';
+
+            const value = Number(prediction.v);
+            const heightPercent = range.maxV === range.minV
+                ? 50
+                : ((value - range.minV) / (range.maxV - range.minV)) * 100;
+            const waterStop = 5 + (heightPercent / 100) * 80;
+            const sandStop = Math.min(waterStop + 20, 100);
 
             return `
-                <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')} ${isNight ? 'is-night' : ''}">
+                <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')} ${isNight ? 'is-night' : ''}"
+                     style="--water-stop: ${waterStop}%; --sand-stop: ${sandStop}%;">
                     <div class="tide-meta">
-                        <span class="tide-date">${sunMoonIcon} ${dateLabel}</span>
-                        <span class="tide-badge">${icon} ${label}</span>
+                        <span class="tide-date">${dateLabel}</span>
+                        <span class="tide-badge">${label}</span>
                     </div>
                     <div class="tide-main">
                         <span class="tide-time">${timeLabel}</span>
-                        <span class="tide-height">${Number(prediction.v).toFixed(1)} ft</span>
+                        <span class="tide-height">${value.toFixed(1)} ft</span>
                     </div>
                 </div>
             `;
@@ -192,9 +198,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const priorTides = allTides.slice(Math.max(0, nextTideIndex - 4), nextTideIndex).reverse();
         const futureTides = allTides.slice(nextTideIndex + 1, nextTideIndex + 5);
 
-        nextTideDiv.innerHTML = formatTides({ predictions: [nextTide] });
-        previousTidesDiv.innerHTML = formatTides({ predictions: priorTides });
-        futureTidesDiv.innerHTML = formatTides({ predictions: futureTides });
+        const heights = allTides.map(tide => Number(tide.v));
+        const heightRange = { minV: Math.min(...heights), maxV: Math.max(...heights) };
+
+        nextTideDiv.innerHTML = formatTides({ predictions: [nextTide] }, heightRange);
+        previousTidesDiv.innerHTML = formatTides({ predictions: priorTides }, heightRange);
+        futureTidesDiv.innerHTML = formatTides({ predictions: futureTides }, heightRange);
 
         const nextTideTime = new Date(nextTide.t);
         const headingEl = document.getElementById('next-tide-heading');

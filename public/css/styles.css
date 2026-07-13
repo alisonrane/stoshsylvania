@@ -103,8 +103,9 @@ h1 {
     background-color: rgba(255, 255, 255, 0.6);
 }
 
-.low-tide {
-    background: linear-gradient(to right, #a3cde6 5%, #f1e2b3 25%);
+.low-tide,
+.high-tide {
+    background: linear-gradient(to right, var(--water-color, #a3cde6) var(--water-stop, 5%), var(--sand-color, #f1e2b3) var(--sand-stop, 25%));
     color: #2e4a62;
 }
 
@@ -113,23 +114,15 @@ h1 {
     color: #fff;
 }
 
-.high-tide {
-    background: linear-gradient(to right, #a3cde6 80%, #f1e2b3 100%);
-    color: #2e4a62;
-}
-
 .high-tide .tide-badge {
     background-color: #c98a1f;
     color: #fff;
 }
 
-.low-tide.is-night {
-    background: linear-gradient(to right, #24384a 5%, #5c4b30 25%);
-    color: #eef2f6;
-}
-
+.low-tide.is-night,
 .high-tide.is-night {
-    background: linear-gradient(to right, #24384a 80%, #5c4b30 100%);
+    --water-color: #24384a;
+    --sand-color: #5c4b30;
     color: #eef2f6;
 }
 
