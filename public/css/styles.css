@@ -1,99 +1,133 @@
 /* styles.css */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    align-items: center;
     background-color: #f0f0f0;
 }
 
 h1 {
-    margin-top: 20px;
+    margin: 0;
+    padding: 16px;
     text-align: center;
+    font-size: 1.3rem;
+    background-color: #2e4a62;
+    color: #fff;
 }
 
 .container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 700px;
+    margin: 16px auto;
+    padding: 0 16px;
 }
 
-#next-tide {
-    order: 1;
-    text-align: center;
+.section {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-#next-tide h2,
-#future-tides h2,
-#previous-tides h2 {
-    margin: 0 0 10px 0; 
+.section h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.05rem;
+    color: #2e4a62;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
 }
 
-#future-tides {
-    order: 2;
-    text-align: center;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+#next-tide-info .tide {
+    margin: 0;
 }
 
-#previous-tides {
-    order: 3;    
-    text-align: center;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+#next-tide-info h3 {
+    font-size: 1.4rem;
+}
+
+.tides {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .tide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     text-align: center;
-    background-color: #fff;
-    padding: 10px;
+    padding: 14px 10px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    gap: 10px;
-    margin: 20px;
+    margin: 0;
 }
 
-.tide h2 {
-    margin: 0 0 10px 0;
+.tide h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.tide h3 .day-label {
+    font-weight: 700;
+}
+
+.tide h3 .date-label {
+    opacity: 0.75;
+    font-size: 0.9em;
 }
 
 .tide p {
-    margin: 0; 
-    align-items: center;
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.tide-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 .low-tide {
     background: linear-gradient(to right, #a3cde6 5%, #f1e2b3 25%);
     color: #2e4a62;
-    padding: 10px;
-    border-radius: 5px;
+}
+
+.low-tide .tide-badge {
+    background-color: #4a90b8;
+    color: #fff;
 }
 
 .high-tide {
     background: linear-gradient(to right, #a3cde6 80%, #f1e2b3 100%);
     color: #2e4a62;
-    padding: 10px;
-    border-radius: 5px;
 }
 
-.tide-icon {
-    margin-left: auto; /* Push icon to the far right */
-    font-size: 30px; /* Slightly smaller size for balance */
-    color: #666; /* Neutral color */
-    transition: color 0.2s;
+.high-tide .tide-badge {
+    background-color: #c98a1f;
+    color: #fff;
 }
 
-.tide:hover .tide-icon {
-    color: #333; /* Slightly darker on hover */
+@media (min-width: 700px) {
+    .tides {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .tide {
+        flex: 1 1 calc(25% - 12px);
+    }
 }

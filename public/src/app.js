@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const nextTideDiv = document.getElementById('next-tide-info');
-    const previousTidesDiv = document.getElementById('previous-tides');
-    const futureTidesDiv = document.getElementById('future-tides');
+    const previousTidesDiv = document.getElementById('previous-tides-list');
+    const futureTidesDiv = document.getElementById('future-tides-list');
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const isSameDay = (a, b) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+
     const convertDateForDisplay = (datetime) => {
         const [date, time24] = datetime.split(' ');
         const [hours, minutes] = time24.split(':').map(Number);
@@ -47,12 +52,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const dateObject = new Date(datetime);
         const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-        const dayOfTheWeek = weekday[dateObject.getDay()];
 
-        const day = dateObject.getUTCDate();
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        let dayLabel;
+        if (isSameDay(dateObject, now)) {
+            dayLabel = 'Today';
+        } else if (isSameDay(dateObject, tomorrow)) {
+            dayLabel = 'Tomorrow';
+        } else if (isSameDay(dateObject, yesterday)) {
+            dayLabel = 'Yesterday';
+        } else {
+            dayLabel = weekday[dateObject.getDay()];
+        }
+
+        const day = dateObject.getDate();
         const month = dateObject.getMonth()+1;
 
-        return `${dayOfTheWeek} ${month}/${day} ${hours12}:${minutesFormatted} ${period}`;
+        return `<span class="day-label">${dayLabel}</span> <span class="date-label">${month}/${day}</span> <span class="time-label">${hours12}:${minutesFormatted} ${period}</span>`;
     };
 
     const formatTides = (data) => {
@@ -68,14 +89,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isLowTide = prediction.type === 'L';
             const isHighTide = prediction.type === 'H';
             const icon = isLowTide ? '👇' : (isHighTide ? '☝️' : '');
+            const label = isLowTide ? 'Low' : (isHighTide ? 'High' : '');
             const datetime = prediction.t;
             const formattedDatetime = convertDateForDisplay(datetime);
-            console.log("isLowTide:", isLowTide, "isHighTide:", isHighTide);
 
             return `
                 <div class="tide ${isLowTide ? 'low-tide' : (isHighTide ? 'high-tide' : '')}">
+                    <div class="tide-badge">${icon} ${label}</div>
                     <h3>${formattedDatetime}</h3>
-                    <p>${prediction.v} feet <span class="tide-icon">${icon}</span></p>
+                    <p>${Number(prediction.v).toFixed(1)} ft</p>
                 </div>
             `;
         }).join('');
