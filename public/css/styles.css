@@ -131,3 +131,70 @@ h1 {
         flex: 1 1 calc(25% - 12px);
     }
 }
+
+.skeleton {
+    background-color: #eee;
+    align-items: center;
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line {
+    background-color: #d8d8d8;
+    border-radius: 999px;
+    height: 14px;
+    width: 50%;
+}
+
+.skeleton-badge {
+    width: 70px;
+    height: 20px;
+}
+
+.skeleton-title {
+    width: 65%;
+    height: 18px;
+}
+
+.skeleton-value {
+    width: 35%;
+    height: 20px;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none;
+    }
+}
+
+.error-card {
+    background-color: #fbe9e7;
+    color: #7a2e1f;
+    gap: 10px;
+}
+
+.error-card p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.retry-btn {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: #c9573f;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.retry-btn:hover {
+    background-color: #a8452f;
+}

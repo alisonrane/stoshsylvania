@@ -3,6 +3,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const previousTidesDiv = document.getElementById('previous-tides-list');
     const futureTidesDiv = document.getElementById('future-tides-list');
 
+    const skeletonCard = `
+        <div class="tide skeleton">
+            <div class="skeleton-line skeleton-badge"></div>
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-value"></div>
+        </div>
+    `;
+    nextTideDiv.innerHTML = skeletonCard;
+    futureTidesDiv.innerHTML = skeletonCard.repeat(4);
+    previousTidesDiv.innerHTML = skeletonCard.repeat(4);
+
     const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -76,13 +87,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `<span class="day-label">${dayLabel}</span> <span class="date-label">${month}/${day}</span> <span class="time-label">${hours12}:${minutesFormatted} ${period}</span>`;
     };
 
+    const formatCountdown = (ms) => {
+        if (ms <= 0) return 'Happening now';
+        const totalMinutes = Math.floor(ms / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return hours > 0 ? `in ${hours}h ${minutes}m` : `in ${minutes}m`;
+    };
+
+    const errorCard = (message) => `
+        <div class="tide error-card">
+            <p>⚠️ ${message}</p>
+            <button type="button" class="retry-btn" onclick="location.reload()">Retry</button>
+        </div>
+    `;
+
     const formatTides = (data) => {
         if (data.error) {
-            return `<p>${data.error}</p>`;
+            return errorCard(data.error);
         }
 
         if (!data.predictions || !Array.isArray(data.predictions)) {
-            return `<p>No tide predictions available.</p>`;
+            return errorCard('No tide predictions available.');
         }
 
         return data.predictions.map(prediction => {
@@ -125,11 +151,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         nextTideDiv.innerHTML = formatTides({ predictions: [nextTide] });
         previousTidesDiv.innerHTML = formatTides({ predictions: priorTides });
         futureTidesDiv.innerHTML = formatTides({ predictions: futureTides });
+
+        const nextTideTime = new Date(nextTide.t);
+        const headingEl = document.getElementById('next-tide-heading');
+        const updateCountdown = () => {
+            headingEl.textContent = `Next Tide ${formatCountdown(nextTideTime - new Date())}`;
+        };
+        updateCountdown();
+        setInterval(updateCountdown, 30000);
     } catch (error) {
         console.error('Error processing tide data:', error);
-        nextTideDiv.innerHTML = `<p>Failed to process tide data.</p>`;
-        previousTidesDiv.innerHTML = `<p>Failed to process tide data.</p>`;
-        futureTidesDiv.innerHTML = `<p>Failed to process tide data.</p>`;
+        const message = errorCard('Failed to load tide data.');
+        nextTideDiv.innerHTML = message;
+        previousTidesDiv.innerHTML = message;
+        futureTidesDiv.innerHTML = message;
     }
 
 
